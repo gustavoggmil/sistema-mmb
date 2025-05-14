@@ -8,6 +8,7 @@
 </head>
 <body>
   <h1>MMB Transportes - Controle de Viagens</h1>
+  
   <div class="menu">
     <button onclick="showForm('carga')">Adicionar Carga</button>
     <button onclick="showForm('debito')">Adicionar Débito</button>
@@ -56,6 +57,7 @@
 
   <div id="lista" class="hidden">
     <h2>Registros</h2>
+    <input type="text" id="filtro" placeholder="Buscar por carga ou débito..." oninput="filtrarRegistros()">
     <div id="registros"></div>
   </div>
 
