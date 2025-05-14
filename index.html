@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMB Transportes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>MMB Transportes - Controle de Viagens</h1>
+  <div class="menu">
+    <button onclick="showForm('carga')">Adicionar Carga</button>
+    <button onclick="showForm('debito')">Adicionar Débito</button>
+    <button onclick="showList()">Ver Registros</button>
+  </div>
+
+  <div id="form-carga" class="form hidden">
+    <h2>Nova Carga</h2>
+    <form id="formCarga" onsubmit="adicionarCarga(event)">
+      <input required placeholder="Empresa da carga" id="empresa"><br>
+      <input required placeholder="Valor da mercadoria" id="valorMercadoria" type="number"><br>
+      <input required placeholder="Tipo da mercadoria" id="tipoMercadoria"><br>
+      <input required placeholder="Origem" id="origem"><br>
+      <input required placeholder="Destino" id="destino"><br>
+      <input required placeholder="KM percorrido" id="km" type="number"><br>
+      <input required placeholder="Peso (kg)" id="peso" type="number"><br>
+      <input required placeholder="Manifestante" id="manifestante"><br>
+      <input required placeholder="Frete do motorista" id="frete" type="number"><br>
+      <input placeholder="Custos da viagem" id="custos" type="number"><br>
+      <input placeholder="Valor recebido" id="recebido" type="number"><br>
+      <input placeholder="Valor a receber" id="areceber" type="number"><br>
+      <input type="date" id="data" required><br>
+      <textarea placeholder="Relatório da viagem" id="relatorio"></textarea><br>
+      <label><input type="checkbox" id="funcionarioMMB"> Transporte feito por funcionário da MMB</label><br><br>
+
+      <label>Anexar comprovante Pix: <input type="file" id="pix"></label><br>
+      <label>Anexar MDF-e: <input type="file" id="mdfe"></label><br>
+      <label>Anexar CT-e: <input type="file" id="cte"></label><br>
+      <label>Anexar Nota Fiscal: <input type="file" id="nf"></label><br>
+      <label>Anexar Canhoto: <input type="file" id="canhoto"></label><br>
+      <label>Contrato de pagamento do motorista: <input type="file" id="contrato"></label><br><br>
+
+      <button type="submit">Salvar Carga</button>
+    </form>
+  </div>
+
+  <div id="form-debito" class="form hidden">
+    <h2>Novo Débito</h2>
+    <form onsubmit="adicionarDebito(event)">
+      <input required placeholder="Descrição" id="descDebito"><br>
+      <input required placeholder="Valor" id="valorDebito" type="number"><br>
+      <input type="date" id="dataDebito" required><br>
+      <button type="submit">Salvar Débito</button>
+    </form>
+  </div>
+
+  <div id="lista" class="hidden">
+    <h2>Registros</h2>
+    <div id="registros"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

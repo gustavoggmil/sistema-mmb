@@ -1,0 +1,189 @@
+/* Resetando margens e paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(45deg, #0a0a0a, #2c2c2c);
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Container central */
+  #lista, #form-carga, #form-debito {
+    max-width: 80%;
+    width: 800px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transform: translateY(0);
+    animation: slideIn 1s ease-out;
+  }
+  
+  /* Formulário */
+  input, select, textarea, button {
+    background-color: #444;
+    border: none;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1.1em;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  input:focus, select:focus, textarea:focus, button:hover {
+    background-color: #333;
+    transform: scale(1.05);
+  }
+  
+  button {
+    background-color: #008CBA;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background-color: #005f6b;
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+  /* Lista de registros */
+  #registros {
+    color: #ddd;
+    padding: 10px;
+    font-size: 1.2em;
+    overflow-y: auto;
+  }
+  
+  h3 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #ff4081;
+  }
+  
+  /* Anexos */
+  a {
+    text-decoration: none;
+    color: #ff5722;
+    transition: color 0.3s ease;
+  }
+  
+  a:hover {
+    color: #ff9800;
+  }
+  
+  /* Esconde os formulários */
+  .hidden {
+    display: none;
+  }
+  
+  /* Efeito de slide para aparecer os formulários */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Efeitos de animação nas cargas */
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  /* Hover de cada carga */
+  #registros div:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: scale(1.05);
+    animation: fadeInOut 2s infinite;
+  }
+  
+  /* Foco do campo de entrada */
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border: 2px solid #ff4081;
+  }
+  
+  /* Efeito de transição para o botão */
+  button {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  button:hover::after {
+    width: 0;
+    height: 0;
+    top: 50%;
+    left: 50%;
+  }
+  
+  /* Efeito de brilho na interface */
+  body {
+    background: linear-gradient(45deg, #0a0a0a, #2c2c2c);
+    animation: glowingBackground 5s ease-in-out infinite;
+  }
+  
+  @keyframes glowingBackground {
+    0% {
+      background: linear-gradient(45deg, #0a0a0a, #2c2c2c);
+    }
+    50% {
+      background: linear-gradient(45deg, #ff4081, #008CBA);
+    }
+    100% {
+      background: linear-gradient(45deg, #0a0a0a, #2c2c2c);
+    }
+  }
+  
+  /* Efeito de foco em cada campo */
+  input, select, textarea {
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 10px 3px rgba(255, 105, 180, 0.8);
+    transform: scale(1.05);
+  }
+  
