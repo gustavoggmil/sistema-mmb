@@ -9,13 +9,12 @@ body {
   font-family: 'Arial', sans-serif;
   background: linear-gradient(45deg, #0a0a0a, #2c2c2c);
   color: #fff;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  min-height: 100vh;
+  display: block;
+  padding: 20px;
+  overflow-y: auto;
   transition: background-color 0.3s ease;
+  animation: glowingBackground 5s ease-in-out infinite;
 }
 
 /* Container central */
@@ -25,7 +24,7 @@ body {
   background: rgba(0, 0, 0, 0.7);
   border-radius: 15px;
   padding: 20px;
-  margin: 20px 0;
+  margin: 20px auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   transform: translateY(0);
   animation: slideIn 1s ease-out;
@@ -42,12 +41,15 @@ input, select, textarea, button {
   font-size: 1.1em;
   width: 100%;
   box-sizing: border-box;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-input:focus, select:focus, textarea:focus, button:hover {
+input:focus, select:focus, textarea:focus {
   background-color: #333;
   transform: scale(1.05);
+  outline: none;
+  border: 2px solid #ff4081;
+  box-shadow: 0 0 10px 3px rgba(255, 105, 180, 0.8);
 }
 
 button {
@@ -55,14 +57,37 @@ button {
   cursor: pointer;
   text-transform: uppercase;
   font-weight: bold;
+  position: relative;
+  overflow: hidden;
 }
 
 button:hover {
   background-color: #005f6b;
+  transform: scale(1.05);
 }
 
 button:active {
   transform: scale(0.98);
+}
+
+button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+button:hover::after {
+  width: 0;
+  height: 0;
+  top: 50%;
+  left: 50%;
 }
 
 /* Lista de registros */
@@ -71,6 +96,12 @@ button:active {
   padding: 10px;
   font-size: 1.2em;
   overflow-y: auto;
+}
+
+#registros div:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: scale(1.05);
+  animation: fadeInOut 2s infinite;
 }
 
 h3 {
@@ -95,7 +126,7 @@ a:hover {
   display: none;
 }
 
-/* Efeito de slide para aparecer os formulários */
+/* Animações */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -107,62 +138,10 @@ a:hover {
   }
 }
 
-/* Efeitos de animação nas cargas */
 @keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-/* Hover de cada carga */
-#registros div:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-  transform: scale(1.05);
-  animation: fadeInOut 2s infinite;
-}
-
-/* Foco do campo de entrada */
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border: 2px solid #ff4081;
-}
-
-/* Efeito de transição para o botão */
-button {
-  position: relative;
-  overflow: hidden;
-}
-
-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 300%;
-  height: 300%;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-button:hover::after {
-  width: 0;
-  height: 0;
-  top: 50%;
-  left: 50%;
-}
-
-/* Efeito de brilho na interface */
-body {
-  background: linear-gradient(45deg, #0a0a0a, #2c2c2c);
-  animation: glowingBackground 5s ease-in-out infinite;
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes glowingBackground {
@@ -175,14 +154,4 @@ body {
   100% {
     background: linear-gradient(45deg, #0a0a0a, #2c2c2c);
   }
-}
-
-/* Efeito de foco em cada campo */
-input, select, textarea {
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 10px 3px rgba(255, 105, 180, 0.8);
-  transform: scale(1.05);
 }
