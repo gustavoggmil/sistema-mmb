@@ -98,14 +98,29 @@ function showForm(tipo) {
   showSection(tipo === 'carga' ? 'form-carga' : tipo === 'debito' ? 'form-debito' : tipo === 'motorista' ? 'form-motorista' : 'form-empresa');
 }
 
-// 3) Adicionar ou atualizar carga (mantido)
-async function adicionarCarga(e) { /* ... existente ... */ }
-// 4) Editar e deletar carga (mantido)
-function editarCarga(id) { /* ... existente ... */ }
-function deletarCarga(id) { /* ... existente ... */ }
-// 5) Adicionar e deletar débito (mantido)
-async function adicionarDebito(e) { /* ... existente ... */ }
-function deletarDebito(id) { /* ... existente ... */ }
+// 3) Adicionar ou atualizar carga
+async function adicionarCarga(e) {
+  e.preventDefault();
+  const id = document.getElementById("editIndex").value;
+  // ... lógica existente ...
+}
+
+// 4) Editar e deletar carga
+function editarCarga(id) {
+  // ... lógica existente ...
+}
+function deletarCarga(id) {
+  // ... lógica existente ...
+}
+
+// 5) Adicionar e deletar débito
+async function adicionarDebito(e) {
+  e.preventDefault();
+  // ... lógica existente ...
+}
+function deletarDebito(id) {
+  // ... lógica existente ...
+}
 
 // 6) Adicionar Motorista
 async function adicionarMotorista(e) {
@@ -140,8 +155,8 @@ function atualizarCamposMotorista() {
   ['autonomo','contratado','mmb'].forEach(tipo => {
     document.getElementById(`field-${tipo}`).classList.add('hidden');
   });
-  const tipo = document.getElementById('tipoMotorista').value;
-  if (tipo) document.getElementById(`field-${tipo}`).classList.remove('hidden');
+  const tipoSel = document.getElementById('tipoMotorista').value;
+  if (tipoSel) document.getElementById(`field-${tipoSel}`).classList.remove('hidden');
 }
 
 // 9) Detalhar transporte
@@ -151,11 +166,35 @@ function mostrarDetalhes(id) {
   panel.classList.toggle('hidden');
 }
 
-// 10) Utilitário de anexos e base64 (mantido)
-function mostrarAnexo(nome, base64) { /* ... existente ... */ }
-function toBase64(file) { /* ... existente ... */ }
+// 10) Utilitário de anexos e base64
+function mostrarAnexo(nome, base64) {
+  if (!base64) return "";
+  return `<a href="${base64}" target="_blank">📎 ${nome}</a><br>`;
+}
+function toBase64(file) {
+  return new Promise(resolve => {
+    if (!file) return resolve(null);
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
+}
 
-// 11) Iniciar listeners Firebase
+// 11) Inicialização e expor funções globais
 window.addEventListener('load', () => {
   carregarRegistrosFirebase();
 });
+
+// Expor funções para HTML onclick
+window.showForm = showForm;
+window.renderizarLista = renderizarLista;
+window.showList = renderizarLista;
+window.adicionarCarga = adicionarCarga;
+window.adicionarDebito = adicionarDebito;
+window.adicionarMotorista = adicionarMotorista;
+window.adicionarEmpresa = adicionarEmpresa;
+window.atualizarCamposMotorista = atualizarCamposMotorista;
+window.mostrarDetalhes = mostrarDetalhes;
+window.editarCarga = editarCarga;
+window.deletarCarga = deletarCarga;
+window.deletarDebito = deletarDebito;
