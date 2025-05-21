@@ -8,16 +8,20 @@ let debitos = [];
 let motoristas = [];
 let empresas = [];
 
-// 2) Carregar registros em tempo real
+// 2) Função utilitária para processar snapshots
+function processSnapshot(snapshot) {
+  const data = snapshot.val() || {};
+  return Object.entries(data).map(([id, val]) => ({ id, ...val }));
+}
+
+// 3) Carregar registros em tempo real
 function carregarRegistrosFirebase() {
   onValue(ref(database, 'cargas'), snapshot => {
-    const data = snapshot.val() || {};
-    cargas = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+    cargas = processSnapshot(snapshot);
     renderizarLista();
   });
   onValue(ref(database, 'debitos'), snapshot => {
-    const data = snapshot.val() || {};
-    debitos = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+    debitos = processSnapshot(snapshot);
     renderizarLista();
   });
   onValue(ref(database, 'motoristas'), snapshot => {
@@ -28,12 +32,7 @@ function carregarRegistrosFirebase() {
   });
 }
 
-function processSnapshot(snapshot) {
-  const data = snapshot.val() || {};
-  return Object.entries(data).map(([id, val]) => ({ id, ...val }));
-}
-
-// 3) Mostrar/ocultar seções
+// 4) Mostrar/ocultar seções
 function showSection(id) {
   ['form-carga','form-debito','form-motorista','form-empresa','lista'].forEach(sec => {
     document.getElementById(sec).classList.add('hidden');
@@ -52,7 +51,7 @@ function showSection(id) {
   }
 }
 
-// 4) showForm genérico
+// 5) showForm genérico
 function showForm(tipo) {
   let sec = 'form-carga';
   if (tipo === 'debito') sec = 'form-debito';
@@ -61,7 +60,7 @@ function showForm(tipo) {
   showSection(sec);
 }
 
-// 5) Renderizar lista de cargas e débitos
+// 6) Renderizar lista de cargas e débitos
 function renderizarLista() {
   showSection('lista');
   const registrosDiv = document.getElementById('registros');
@@ -104,30 +103,8 @@ function renderizarLista() {
   });
 }
 
-// 6) Adicionar/atualizar carga
-async function adicionarCarga(e) {
-  e.preventDefault();
-  const id = document.getElementById('editIndex').value;
-  const carga = await collectFormCarga();
-  if (!id) {
-    const newRef = push(ref(database, 'cargas'));
-    await set(newRef, carga);
-    alert('Carga registrada!');
-  } else {
-    await update(ref(database, `cargas/${id}`), carga);
-    alert('Carga atualizada!');
-    document.getElementById('editIndex').value = '';
-  }
-  document.getElementById('formCarga').reset();
-  // Exibe lista; o onValue listener irá repopular automaticamente
-  showSection('lista');
-}
-
-  document.getElementById('formCarga').reset();
-  renderizarLista();
-}
-
-function collectFormCarga() {
+// 7) Coletar dados do formulário de carga
+async function collectFormCarga() {
   return {
     empresa: document.getElementById('empresa').value,
     valorMercadoria: document.getElementById('valorMercadoria').value,
@@ -154,32 +131,50 @@ function collectFormCarga() {
   };
 }
 
-// 7) Editar e deletar carga
+// 8) Adicionar/atualizar carga
+async function adicionarCarga(e) {
+  e.preventDefault();
+  const id = document.getElementById('editIndex').value;
+  const carga = await collectFormCarga();
+  if (!id) {
+    const newRef = push(ref(database, 'cargas'));
+    await set(newRef, carga);
+    alert('Carga registrada!');
+  } else {
+    await update(ref(database, `cargas/${id}`), carga);
+    alert('Carga atualizada!');
+    document.getElementById('editIndex').value = '';
+  }
+  document.getElementById('formCarga').reset();
+  showSection('lista');
+}
+
+// 9) Editar e deletar carga
 function editarCarga(id) { /* lógica existente */ }
 function deletarCarga(id) { /* lógica existente */ }
 
-// 8) Adicionar/deletar débito
+// 10) Adicionar/deletar débito
 async function adicionarDebito(e) { /* lógica existente */ }
 function deletarDebito(id) { /* lógica existente */ }
 
-// 9) Motorista/Empresa
+// 11) Motorista/Empresa
 async function adicionarMotorista(e) { /* lógica existente */ }
 async function adicionarEmpresa(e) { /* lógica existente */ }
 function atualizarCamposMotorista() { /* lógica existente */ }
 
-// 10) Detalhes, anexos e utilitários
+// 12) Detalhes, anexos e utilitários
 function mostrarDetalhes(id) { /* lógica existente */ }
-function mostrarAnexo(nome, base64) { /* lógica existente */ }
-function toBase64(file) { /* lógica existente */ }
+function mostrarAnexo(nome, base64) { if (!base64) return ''; return `<a href="${base64}" target="_blank">📎 ${nome}</a><br>`; }
+function toBase64(file) { return new Promise(resolve => { if (!file) return resolve(null); const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
 
-// 11) Inicialização após load
-window.addEventListener('DOMContentLoaded', () => {
+// 13) Inicialização após load
+document.addEventListener('DOMContentLoaded', () => {
   ({ ref, push, set, onValue, update, remove } = window.firebaseRefs);
   database = window.database;
   carregarRegistrosFirebase();
 });
 
-// 12) Expor globalmente
+// 14) Expor globalmente
 window.showForm = showForm;
 window.renderizarLista = renderizarLista;
 window.adicionarCarga = adicionarCarga;
