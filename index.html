@@ -1,64 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MMB Transportes</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <h1>MMB Transportes - Controle de Viagens</h1>
-  
-  <div class="menu">
-    <button onclick="showForm('carga')">Adicionar Carga</button>
-    <button onclick="showForm('debito')">Adicionar Débito</button>
-    <button onclick="showList()">Ver Registros</button>
-  </div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">MMB</div>
+      <nav class="menu">
+        <button onclick="showForm('carga')"><span>+</span> Adicionar Carga</button>
+        <button onclick="showForm('debito')"><span>+</span> Adicionar Débito</button>
+        <button onclick="showList()"><span>📄</span> Ver Registros</button>
+      </nav>
+    </aside>
 
-  <div id="form-carga" class="form hidden">
-    <h2>Nova Carga</h2>
-    <form id="formCarga" onsubmit="adicionarCarga(event)">
-      <input required placeholder="Empresa da carga" id="empresa"><br>
-      <input required placeholder="Valor da mercadoria" id="valorMercadoria" type="number"><br>
-      <input required placeholder="Tipo da mercadoria" id="tipoMercadoria"><br>
-      <input required placeholder="Origem" id="origem"><br>
-      <input required placeholder="Destino" id="destino"><br>
-      <input required placeholder="KM percorrido" id="km" type="number"><br>
-      <input required placeholder="Peso (kg)" id="peso" type="number"><br>
-      <input required placeholder="Manifestante" id="manifestante"><br>
-      <input required placeholder="Frete do motorista" id="frete" type="number"><br>
-      <input placeholder="Custos da viagem" id="custos" type="number"><br>
-      <input placeholder="Valor recebido" id="recebido" type="number"><br>
-      <input placeholder="Valor a receber" id="areceber" type="number"><br>
-      <input type="date" id="data" required><br>
-      <textarea placeholder="Relatório da viagem" id="relatorio"></textarea><br>
-      <label><input type="checkbox" id="funcionarioMMB"> Transporte feito por funcionário da MMB</label><br><br>
+    <main class="content">
+      <section id="form-carga" class="form-section hidden">
+        <h1>Nova Carga</h1>
+        <!-- Adições aqui -->
+        <input type="hidden" id="editIndex" value="">
+        <h2 id="form-titulo">Registrar Carga</h2>
+        <form id="formCarga" onsubmit="adicionarCarga(event)">
+          <input required placeholder="Empresa da carga" id="empresa" />
+          <input required placeholder="Valor da mercadoria" id="valorMercadoria" type="number" />
+          <input required placeholder="Tipo da mercadoria" id="tipoMercadoria" />
+          <input required placeholder="Origem" id="origem" />
+          <input required placeholder="Destino" id="destino" />
+          <input required placeholder="KM percorrido" id="km" type="number" />
+          <input required placeholder="Peso (kg)" id="peso" type="number" />
+          <input required placeholder="Manifestante" id="manifestante" />
+          <input required placeholder="Frete do motorista" id="frete" type="number" />
+          <input placeholder="Custos da viagem" id="custos" type="number" />
+          <input placeholder="Valor recebido" id="recebido" type="number" />
+          <input placeholder="Valor a receber" id="areceber" type="number" />
+          <input type="date" id="data" required />
+          <textarea placeholder="Relatório da viagem" id="relatorio"></textarea>
+          <label><input type="checkbox" id="funcionarioMMB" /> Transporte feito por funcionário da MMB</label>
 
-      <label>Anexar comprovante Pix: <input type="file" id="pix"></label><br>
-      <label>Anexar MDF-e: <input type="file" id="mdfe"></label><br>
-      <label>Anexar CT-e: <input type="file" id="cte"></label><br>
-      <label>Anexar Nota Fiscal: <input type="file" id="nf"></label><br>
-      <label>Anexar Canhoto: <input type="file" id="canhoto"></label><br>
-      <label>Contrato de pagamento do motorista: <input type="file" id="contrato"></label><br><br>
+          <label>Anexar comprovante Pix: <input type="file" id="pix" /></label>
+          <label>Anexar MDF-e: <input type="file" id="mdfe" /></label>
+          <label>Anexar CT-e: <input type="file" id="cte" /></label>
+          <label>Anexar Nota Fiscal: <input type="file" id="nf" /></label>
+          <label>Anexar Canhoto: <input type="file" id="canhoto" /></label>
+          <label>Contrato de pagamento do motorista: <input type="file" id="contrato" /></label>
 
-      <button type="submit">Salvar Carga</button>
-    </form>
-  </div>
+          <button type="submit" class="btn">Salvar Carga</button>
+        </form>
+      </section>
 
-  <div id="form-debito" class="form hidden">
-    <h2>Novo Débito</h2>
-    <form onsubmit="adicionarDebito(event)">
-      <input required placeholder="Descrição" id="descDebito"><br>
-      <input required placeholder="Valor" id="valorDebito" type="number"><br>
-      <input type="date" id="dataDebito" required><br>
-      <button type="submit">Salvar Débito</button>
-    </form>
-  </div>
+      <section id="form-debito" class="form-section hidden">
+        <h1>Novo Débito</h1>
+        <form onsubmit="adicionarDebito(event)">
+          <input required placeholder="Descrição" id="descDebito" />
+          <input required placeholder="Valor" id="valorDebito" type="number" />
+          <input type="date" id="dataDebito" required />
+          <button type="submit" class="btn">Salvar Débito</button>
+        </form>
+      </section>
 
-  <div id="lista" class="hidden">
-    <h2>Registros</h2>
-    <input type="text" id="filtro" placeholder="Buscar por carga ou débito..." oninput="filtrarRegistros()">
-    <div id="registros"></div>
+      <section id="lista" class="form-section hidden">
+        <h1>Registros</h1>
+        <input type="text" id="filtro" placeholder="Buscar por carga ou débito..." oninput="filtrarRegistros()" />
+        <div id="registros"></div>
+      </section>
+    </main>
   </div>
 
   <script src="script.js"></script>

@@ -2,8 +2,13 @@ function showForm(tipo) {
     document.getElementById("form-carga").classList.add("hidden");
     document.getElementById("form-debito").classList.add("hidden");
     document.getElementById("lista").classList.add("hidden");
+
     if (tipo === "carga") document.getElementById("form-carga").classList.remove("hidden");
     if (tipo === "debito") document.getElementById("form-debito").classList.remove("hidden");
+
+    // Atualiza o título do formulário (opcional)
+    const titulo = document.getElementById("form-titulo");
+    if (titulo) titulo.innerText = tipo === "carga" ? "Registrar Carga" : "Registrar Débito";
 }
 
 function showList() {
@@ -50,7 +55,7 @@ function mostrarAnexo(nome, base64) {
 async function adicionarCarga(e) {
     e.preventDefault();
     const cargas = JSON.parse(localStorage.getItem("cargas") || "[]");
-    const index = document.getElementById("editIndex")?.value;
+    const index = document.getElementById("editIndex").value;
 
     const carga = {
         empresa: document.getElementById("empresa").value,
@@ -77,7 +82,7 @@ async function adicionarCarga(e) {
         contrato: await toBase64(document.getElementById("contrato").files[0])
     };
 
-    if (index === "" || index === undefined) {
+    if (index === "") {
         cargas.push(carga);
         alert("Carga registrada!");
     } else {
@@ -110,16 +115,10 @@ function editarCarga(index) {
     document.getElementById("data").value = c.data;
     document.getElementById("relatorio").value = c.relatorio;
     document.getElementById("funcionarioMMB").checked = c.funcionarioMMB;
+    document.getElementById("editIndex").value = index;
 
-    if (!document.getElementById("editIndex")) {
-        const hidden = document.createElement("input");
-        hidden.type = "hidden";
-        hidden.id = "editIndex";
-        hidden.value = index;
-        document.getElementById("formCarga").appendChild(hidden);
-    } else {
-        document.getElementById("editIndex").value = index;
-    }
+    const titulo = document.getElementById("form-titulo");
+    if (titulo) titulo.innerText = `Editando carga: ${c.empresa}`;
 
     showForm("carga");
 }
