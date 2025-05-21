@@ -155,12 +155,28 @@ function buildDebitoCard(d) {
 // 9) Coleta de dados do formulário de carga
 // =====================
 async function collectFormCarga() {
-  const toBase = file=>file ? await toBase64(file) : null;
+  // helper async converter
+  async function toBase(file) {
+    if (!file) return null;
+    return await toBase64(file);
+  }
   return {
-    empresa: v('empresa'), valorMercadoria: v('valorMercadoria'), tipoMercadoria: v('tipoMercadoria'),
-    origem: v('origem'), destino: v('destino'), km: v('km'), peso: v('peso'), manifestante: v('manifestante'),
-    frete: v('frete'), custos: v('custos'), recebido: v('recebido'), areceber: v('areceber'), data: v('data'),
-    relatorio: v('relatorio'), funcionarioMMB: cb('funcionarioMMB'), status:'Em andamento',
+    empresa: v('empresa'),
+    valorMercadoria: v('valorMercadoria'),
+    tipoMercadoria: v('tipoMercadoria'),
+    origem: v('origem'),
+    destino: v('destino'),
+    km: v('km'),
+    peso: v('peso'),
+    manifestante: v('manifestante'),
+    frete: v('frete'),
+    custos: v('custos'),
+    recebido: v('recebido'),
+    areceber: v('areceber'),
+    data: v('data'),
+    relatorio: v('relatorio'),
+    funcionarioMMB: cb('funcionarioMMB'),
+    status: 'Em andamento',
     pix: await toBase(document.getElementById('pix').files[0]),
     mdfe: await toBase(document.getElementById('mdfe').files[0]),
     cte: await toBase(document.getElementById('cte').files[0]),
