@@ -27,7 +27,30 @@
         <input type="hidden" id="editIndex" value="">
         <h2 id="form-titulo">Registrar Carga</h2>
         <form id="formCarga" onsubmit="adicionarCarga(event)">
-          <!-- campos existentes... -->
+          <input required placeholder="Empresa da carga" id="empresa" />
+          <input required placeholder="Valor da mercadoria" id="valorMercadoria" type="number" />
+          <input required placeholder="Tipo da mercadoria" id="tipoMercadoria" />
+          <input required placeholder="Origem" id="origem" />
+          <input required placeholder="Destino" id="destino" />
+          <input required placeholder="KM percorrido" id="km" type="number" />
+          <input required placeholder="Peso (kg)" id="peso" type="number" />
+          <input required placeholder="Manifestante" id="manifestante" />
+          <input required placeholder="Frete total" id="frete" type="number" />
+          <input placeholder="Custos da viagem" id="custos" type="number" />
+          <input placeholder="Valor recebido" id="recebido" type="number" />
+          <input placeholder="Valor a receber" id="areceber" type="number" />
+          <input type="date" id="data" required />
+          <textarea placeholder="Relatório da viagem" id="relatorio"></textarea>
+          <label><input type="checkbox" id="funcionarioMMB" /> Transporte feito por funcionário da MMB</label>
+
+          <label>Anexar comprovante Pix: <input type="file" id="pix" /></label>
+          <label>Anexar MDF-e: <input type="file" id="mdfe" /></label>
+          <label>Anexar CT-e: <input type="file" id="cte" /></label>
+          <label>Anexar Nota Fiscal: <input type="file" id="nf" /></label>
+          <label>Anexar Canhoto: <input type="file" id="canhoto" /></label>
+          <label>Contrato de pagamento do motorista: <input type="file" id="contrato" /></label>
+
+          <button type="submit" class="btn">Salvar Carga</button>
         </form>
       </section>
 
@@ -35,7 +58,10 @@
       <section id="form-debito" class="form-section hidden">
         <h1>Novo Débito</h1>
         <form onsubmit="adicionarDebito(event)">
-          <!-- campos existentes... -->
+          <input required placeholder="Descrição" id="descDebito" />
+          <input required placeholder="Valor" id="valorDebito" type="number" />
+          <input type="date" id="dataDebito" required />
+          <button type="submit" class="btn">Salvar Débito</button>
         </form>
       </section>
 
@@ -50,13 +76,13 @@
             <option value="contratado">Contratado</option>
             <option value="mmb">Funcionário MMB</option>
           </select>
-          <div class="dynamic-field" id="field-autonomo">
+          <div class="dynamic-field hidden" id="field-autonomo">
             <input placeholder="CPF" id="cpfAutonomo" />
           </div>
-          <div class="dynamic-field" id="field-contratado">
+          <div class="dynamic-field hidden" id="field-contratado">
             <input placeholder="Nome da empresa" id="empresaContratada" />
           </div>
-          <div class="dynamic-field" id="field-mmb">
+          <div class="dynamic-field hidden" id="field-mmb">
             <p>Funcionário MMB não precisa de dados extras</p>
           </div>
           <button type="submit" class="btn">Salvar Motorista</button>
