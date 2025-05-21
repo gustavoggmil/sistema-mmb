@@ -9,15 +9,17 @@ body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
   color: #fff;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  transition: background-color 0.3s ease;
 }
 
 /* Estrutura principal */
 .app {
   display: flex;
-  height: 100vh;
   width: 100%;
+  min-height: 100vh;
 }
 
 /* Sidebar */
@@ -42,7 +44,10 @@ body {
   letter-spacing: 2px;
 }
 
-.menu button {
+/* Menu principal */
+.menu button,
+.menu button[data-target="motorista"],
+.menu button[data-target="empresa"] {
   background: #1e1e1e;
   border: 1px solid #333;
   color: #fff;
@@ -60,7 +65,9 @@ body {
   font-size: 1.2rem;
 }
 
-.menu button:hover {
+.menu button:hover,
+.menu button[data-target="motorista"]:hover,
+.menu button[data-target="empresa"]:hover {
   background: #ff4081;
   transform: scale(1.05);
   box-shadow: 0 0 10px #ff4081;
@@ -75,7 +82,9 @@ body {
 }
 
 /* Seções do formulário */
-.form-section {
+.form-section,
+#form-motorista,
+#form-empresa {
   max-width: 900px;
   margin: 0 auto 40px;
   background: rgba(30, 30, 30, 0.85);
@@ -89,6 +98,11 @@ body {
   display: none;
 }
 
+.visible {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
 h1 {
   font-size: 2rem;
   margin-bottom: 20px;
@@ -96,7 +110,10 @@ h1 {
 }
 
 /* Inputs e botões */
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   width: 100%;
   padding: 15px;
   margin-bottom: 15px;
@@ -108,7 +125,9 @@ input, select, textarea, button {
   transition: all 0.3s ease;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: none;
   background-color: #1f1f1f;
   border: 2px solid #ff4081;
@@ -168,7 +187,7 @@ label {
   box-shadow: inset 0 0 10px rgba(255, 64, 129, 0.2);
 }
 
-#registros div {
+#registros .registro-card {
   margin-bottom: 15px;
   padding: 10px;
   background: #2b2b2b;
@@ -176,10 +195,31 @@ label {
   transition: transform 0.3s ease, background 0.3s ease;
 }
 
-#registros div:hover {
+#registros .registro-card:hover {
   background: #333;
   transform: scale(1.02);
   box-shadow: 0 0 10px rgba(255, 64, 129, 0.3);
+}
+
+/* Painel de detalhes */
+.detail-panel {
+  background: rgba(255, 64, 129, 0.1);
+  border: 1px solid #ff4081;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 15px;
+  animation: fadeIn 0.5s ease;
+}
+
+.detail-panel h4 {
+  color: #29b6f6;
+  margin-bottom: 10px;
+}
+
+.detail-panel .row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 /* Links de anexos */
