@@ -148,8 +148,38 @@ async function adicionarCarga(e) {
   showSection('lista');
 }
 
-// 9) Edit/delete cargo stubs
-function editarCarga(id) { /* implementar */ }
+// 9) Editar carga
+function editarCarga(id) {
+  const c = cargas.find(item => item.id === id);
+  if (!c) return;
+  showSection('form-carga');
+  document.getElementById('editIndex').value = id;
+  document.getElementById('empresa').value = c.empresa;
+  document.getElementById('valorMercadoria').value = c.valorMercadoria;
+  document.getElementById('tipoMercadoria').value = c.tipoMercadoria;
+  document.getElementById('origem').value = c.origem;
+  document.getElementById('destino').value = c.destino;
+  document.getElementById('km').value = c.km;
+  document.getElementById('peso').value = c.peso;
+  document.getElementById('manifestante').value = c.manifestante;
+  document.getElementById('frete').value = c.frete;
+  document.getElementById('custos').value = c.custos;
+  document.getElementById('recebido').value = c.recebido;
+  document.getElementById('areceber').value = c.areceber;
+  document.getElementById('data').value = c.data;
+  document.getElementById('relatorio').value = c.relatorio;
+  document.getElementById('funcionarioMMB').checked = c.funcionarioMMB;
+}
+
+// 10) Excluir carga
+function deletarCarga(id) {
+  const motivo = prompt('Motivo da exclusão:');
+  const senha = prompt('Senha para exclusão:');
+  if (senha !== '4619') return alert('Senha incorreta.');
+  if (!motivo) return alert('Motivo é obrigatório.');
+  remove(ref(database, `cargas/${id}`));
+}
+
 function deletarCarga(id) { /* implementar */ }
 
 // 10) Add/delete debit stubs
