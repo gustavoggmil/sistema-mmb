@@ -1,217 +1,256 @@
 // script.js
-// 0) Inicialização de refs do Firebase após load
+// =====================
+// 0) Inicialização após DOMContentLoaded
+// =====================
 let ref, push, set, onValue, update, remove, database;
 
-// 1) Variáveis globais
+document.addEventListener('DOMContentLoaded', () => {
+  // importar funções do Firebase expostas no HTML
+  ({ ref, push, set, onValue, update, remove } = window.firebaseRefs);
+  database = window.database;
+  initApp();
+});
+
+// =====================
+// 1) Estado global
+// =====================
 let cargas = [];
 let debitos = [];
 let motoristas = [];
 let empresas = [];
 
-// 2) Utilitário para processar snapshots
-function processSnapshot(snapshot) {
+// =====================
+// 2) Inicialização da aplicação
+// =====================
+function initApp() {
+  bindUI();
+  setupFirebaseListeners();
+  showSection('lista');
+}
+
+// =====================
+// 3) Bind de eventos de UI
+// =====================
+function bindUI() {
+  window.showForm = showForm;
+  window.adicionarCarga = adicionarCarga;
+  window.adicionarDebito = adicionarDebito;
+  window.adicionarMotorista = adicionarMotorista;
+  window.adicionarEmpresa = adicionarEmpresa;
+  window.editarCarga = editarCarga;
+  window.deletarCarga = deletarCarga;
+  window.deletarDebito = deletarDebito;
+  window.mostrarDetalhes = mostrarDetalhes;
+  window.atualizarCamposMotorista = atualizarCamposMotorista;
+}
+
+// =====================
+// 4) Configurar listeners do Firebase
+// =====================
+function setupFirebaseListeners() {
+  onValue(ref(database, 'cargas'), snap => {
+    cargas = snapshotToArray(snap);
+    renderizarLista();
+  });
+  onValue(ref(database, 'debitos'), snap => {
+    debitos = snapshotToArray(snap);
+    renderizarLista();
+  });
+  onValue(ref(database, 'motoristas'), snap => {
+    motoristas = snapshotToArray(snap);
+  });
+  onValue(ref(database, 'empresas'), snap => {
+    empresas = snapshotToArray(snap);
+  });
+}
+
+// =====================
+// 5) Utilitário: converte snapshot para array
+// =====================
+function snapshotToArray(snapshot) {
   const data = snapshot.val() || {};
   return Object.entries(data).map(([id, val]) => ({ id, ...val }));
 }
 
-// 3) Carregar registros em tempo real
-function carregarRegistrosFirebase() {
-  onValue(ref(database, 'cargas'), snapshot => {
-    cargas = processSnapshot(snapshot);
-    renderizarLista();
-  });
-  onValue(ref(database, 'debitos'), snapshot => {
-    debitos = processSnapshot(snapshot);
-    renderizarLista();
-  });
-  onValue(ref(database, 'motoristas'), snapshot => {
-    motoristas = processSnapshot(snapshot);
-  });
-  onValue(ref(database, 'empresas'), snapshot => {
-    empresas = processSnapshot(snapshot);
-  });
-}
-
-// 4) Show/hide sections
+// =====================
+// 6) Navegação entre seções
+// =====================
 function showSection(id) {
   ['form-carga','form-debito','form-motorista','form-empresa','lista']
     .forEach(sec => document.getElementById(sec).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
+  updateFormTitle(id);
+}
+
+function updateFormTitle(sectionId) {
+  const titles = {
+    'form-carga': 'Registrar Carga',
+    'form-debito': 'Registrar Débito',
+    'form-motorista': 'Cadastro de Motorista',
+    'form-empresa': 'Cadastro de Empresa'
+  };
   const titulo = document.getElementById('form-titulo');
-  if (titulo) {
-    let text = '';
-    switch(id) {
-      case 'form-carga': text = 'Registrar Carga'; break;
-      case 'form-debito': text = 'Registrar Débito'; break;
-      case 'form-motorista': text = 'Cadastro de Motorista'; break;
-      case 'form-empresa': text = 'Cadastro de Empresa'; break;
-    }
-    titulo.innerText = text;
-  }
+  if (titulo) titulo.innerText = titles[sectionId] || '';
 }
 
-// 5) Generic showForm
+// =====================
+// 7) Abrir formulário específico
+// =====================
 function showForm(tipo) {
-  let section = 'form-carga';
-  if (tipo === 'debito') section = 'form-debito';
-  else if (tipo === 'motorista') section = 'form-motorista';
-  else if (tipo === 'empresa') section = 'form-empresa';
-  showSection(section);
+  const map = {
+    carga: 'form-carga',
+    debito: 'form-debito',
+    motorista: 'form-motorista',
+    empresa: 'form-empresa'
+  };
+  showSection(map[tipo]);
 }
 
-// 6) Render list
+// =====================
+// 8) Renderização da lista
+// =====================
 function renderizarLista() {
   showSection('lista');
-  const registrosDiv = document.getElementById('registros');
-  registrosDiv.innerHTML = '';
-  registrosDiv.innerHTML += '<h3>Cargas:</h3>';
-  cargas.forEach(c => {
-    registrosDiv.innerHTML += `
-      <div class="registro-card">
-        <strong>${c.empresa}</strong> - ${c.origem} ➔ ${c.destino}<br>
-        Frete total: R$${c.frete} | Status: ${c.status}<br>
-        <button onclick="editarCarga('${c.id}')">Editar</button>
-        <button onclick="deletarCarga('${c.id}')">Excluir</button>
-        <button onclick="mostrarDetalhes('${c.id}')">Detalhar Transporte</button>
-        <div>
-          ${mostrarAnexo('Pix', c.pix)}
-          ${mostrarAnexo('MDF-e', c.mdfe)}
-          ${mostrarAnexo('CT-e', c.cte)}
-          ${mostrarAnexo('Nota Fiscal', c.nf)}
-          ${mostrarAnexo('Canhoto', c.canhoto)}
-          ${mostrarAnexo('Contrato', c.contrato)}
-        </div>
-        <div id="detail-${c.id}" class="detail-panel hidden">
-          <h4>MMB</h4>
-          <div class="row"><span>Recebido:</span><span>R$${c.recebido}</span></div>
-          <div class="row"><span>A Receber:</span><span>R$${c.areceber}</span></div>
-          <h4>Motorista</h4>
-          <div class="row"><span>Adiantamento:</span><span>R$${c.adiantamento||0}</span></div>
-          <div class="row"><span>Saldo:</span><span>R$${c.saldo||0}</span></div>
-        </div>
-      </div>
-    `;
-  });
-  registrosDiv.innerHTML += '<h3>Débitos:</h3>';
-  debitos.forEach(d => {
-    registrosDiv.innerHTML += `
-      <div class="registro-card">
-        ${d.data} - ${d.descricao} | R$${d.valor} <button onclick="deletarDebito('${d.id}')">Excluir</button>
-      </div>
-    `;
-  });
+  const cont = document.getElementById('registros');
+  cont.innerHTML = '';
+  // Cargas
+  cont.insertAdjacentHTML('beforeend','<h3>Cargas:</h3>');
+  cargas.forEach(c => cont.insertAdjacentHTML('beforeend', buildCargaCard(c)));
+  // Débitos
+  cont.insertAdjacentHTML('beforeend','<h3>Débitos:</h3>');
+  debitos.forEach(d => cont.insertAdjacentHTML('beforeend', buildDebitoCard(d)));
 }
 
-// 7) Collect cargo form data
+function buildCargaCard(c) {
+  return `
+    <div class="registro-card">
+      <strong>${c.empresa}</strong> - ${c.origem} ➔ ${c.destino}<br>
+      Frete total: R$${c.frete} | Status: ${c.status}<br>
+      <button onclick="editarCarga('${c.id}')">Editar</button>
+      <button onclick="deletarCarga('${c.id}')">Excluir</button>
+      <button onclick="mostrarDetalhes('${c.id}')">Detalhar Transporte</button>
+      <div>${['pix','mdfe','cte','nf','canhoto','contrato'].map(key=>mostrarAnexo(key.toUpperCase(),c[key])).join('')}</div>
+      <div id="detail-${c.id}" class="detail-panel hidden">
+        <h4>MMB</h4>
+        <div class="row"><span>Recebido:</span><span>R$${c.recebido}</span></div>
+        <div class="row"><span>A Receber:</span><span>R$${c.areceber}</span></div>
+        <h4>Motorista</h4>
+        <div class="row"><span>Adiantamento:</span><span>R$${c.adiantamento||0}</span></div>
+        <div class="row"><span>Saldo:</span><span>R$${c.saldo||0}</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function buildDebitoCard(d) {
+  return `
+    <div class="registro-card">
+      ${d.data} - ${d.descricao} | R$${d.valor}
+      <button onclick="deletarDebito('${d.id}')">Excluir</button>
+    </div>
+  `;
+}
+
+// =====================
+// 9) Coleta de dados do formulário de carga
+// =====================
 async function collectFormCarga() {
+  const toBase = file=>file ? await toBase64(file) : null;
   return {
-    empresa: document.getElementById('empresa').value,
-    valorMercadoria: document.getElementById('valorMercadoria').value,
-    tipoMercadoria: document.getElementById('tipoMercadoria').value,
-    origem: document.getElementById('origem').value,
-    destino: document.getElementById('destino').value,
-    km: document.getElementById('km').value,
-    peso: document.getElementById('peso').value,
-    manifestante: document.getElementById('manifestante').value,
-    frete: document.getElementById('frete').value,
-    custos: document.getElementById('custos').value,
-    recebido: document.getElementById('recebido').value,
-    areceber: document.getElementById('areceber').value,
-    data: document.getElementById('data').value,
-    relatorio: document.getElementById('relatorio').value,
-    funcionarioMMB: document.getElementById('funcionarioMMB').checked,
-    status: 'Em andamento',
-    pix: await toBase64(document.getElementById('pix').files[0]),
-    mdfe: await toBase64(document.getElementById('mdfe').files[0]),
-    cte: await toBase64(document.getElementById('cte').files[0]),
-    nf: await toBase64(document.getElementById('nf').files[0]),
-    canhoto: await toBase64(document.getElementById('canhoto').files[0]),
-    contrato: await toBase64(document.getElementById('contrato').files[0])
+    empresa: v('empresa'), valorMercadoria: v('valorMercadoria'), tipoMercadoria: v('tipoMercadoria'),
+    origem: v('origem'), destino: v('destino'), km: v('km'), peso: v('peso'), manifestante: v('manifestante'),
+    frete: v('frete'), custos: v('custos'), recebido: v('recebido'), areceber: v('areceber'), data: v('data'),
+    relatorio: v('relatorio'), funcionarioMMB: cb('funcionarioMMB'), status:'Em andamento',
+    pix: await toBase(document.getElementById('pix').files[0]),
+    mdfe: await toBase(document.getElementById('mdfe').files[0]),
+    cte: await toBase(document.getElementById('cte').files[0]),
+    nf: await toBase(document.getElementById('nf').files[0]),
+    canhoto: await toBase(document.getElementById('canhoto').files[0]),
+    contrato: await toBase(document.getElementById('contrato').files[0])
   };
 }
 
-// 8) Add/update cargo
+function v(id){return document.getElementById(id).value}
+function cb(id){return document.getElementById(id).checked}
+
+// =====================
+// 10) Ações de carga
+// =====================
 async function adicionarCarga(e) {
   e.preventDefault();
-  const id = document.getElementById('editIndex').value;
-  const carga = await collectFormCarga();
-  if (!id) {
-    const newRef = push(ref(database, 'cargas'));
-    await set(newRef, carga);
-    alert('Carga registrada!');
-  } else {
-    await update(ref(database, `cargas/${id}`), carga);
-    alert('Carga atualizada!');
-    document.getElementById('editIndex').value = '';
-  }
+  const id = v('editIndex');
+  const data = await collectFormCarga();
+  if(!id) { const n=push(ref(database,'cargas')); await set(n,data); alert('Carga registrada!'); }
+  else     { await update(ref(database,`cargas/${id}`),data); alert('Carga atualizada!'); }
   document.getElementById('formCarga').reset();
   showSection('lista');
 }
 
-// 9) Editar carga
 function editarCarga(id) {
-  const c = cargas.find(item => item.id === id);
-  if (!c) return;
-  showSection('form-carga');
-  document.getElementById('editIndex').value = id;
-  document.getElementById('empresa').value = c.empresa;
-  document.getElementById('valorMercadoria').value = c.valorMercadoria;
-  document.getElementById('tipoMercadoria').value = c.tipoMercadoria;
-  document.getElementById('origem').value = c.origem;
-  document.getElementById('destino').value = c.destino;
-  document.getElementById('km').value = c.km;
-  document.getElementById('peso').value = c.peso;
-  document.getElementById('manifestante').value = c.manifestante;
-  document.getElementById('frete').value = c.frete;
-  document.getElementById('custos').value = c.custos;
-  document.getElementById('recebido').value = c.recebido;
-  document.getElementById('areceber').value = c.areceber;
-  document.getElementById('data').value = c.data;
-  document.getElementById('relatorio').value = c.relatorio;
-  document.getElementById('funcionarioMMB').checked = c.funcionarioMMB;
+  const c = cargas.find(x=>x.id===id); if(!c) return;
+  showSection('form-carga'); document.getElementById('editIndex').value=id;
+  ['empresa','valorMercadoria','tipoMercadoria','origem','destino','km','peso','manifestante','frete','custos','recebido','areceber','data','relatorio']
+    .forEach(f=>document.getElementById(f).value=c[f]);
+  document.getElementById('funcionarioMMB').checked=c.funcionarioMMB;
 }
 
-// 10) Excluir carga
 function deletarCarga(id) {
-  const motivo = prompt('Motivo da exclusão:');
-  const senha = prompt('Senha para exclusão:');
-  if (senha !== '4619') return alert('Senha incorreta.');
-  if (!motivo) return alert('Motivo é obrigatório.');
-  remove(ref(database, `cargas/${id}`));
+  const motivo=prompt('Motivo:'), senha=prompt('Senha:');
+  if(senha!=='4619'||!motivo) return alert('Cancelado.');
+  remove(ref(database,`cargas/${id}`));
 }
 
-function deletarCarga(id) { /* implementar */ }
+// =====================
+// 11) Ações de débito
+// =====================
+async function adicionarDebito(e) {
+  e.preventDefault();
+  const d={descricao:v('descDebito'),valor:v('valorDebito'),data:v('dataDebito')};
+  const n=push(ref(database,'debitos')); await set(n,d); alert('Débito registrado!');
+  document.getElementById('form-debito').reset(); showSection('lista');
+}
 
-// 10) Add/delete debit stubs
-async function adicionarDebito(e) { /* implementar */ }
-function deletarDebito(id) { /* implementar */ }
+function deletarDebito(id) {
+  const motivo=prompt('Motivo:'), senha=prompt('Senha:');
+  if(senha!=='4619'||!motivo) return alert('Cancelado.');
+  remove(ref(database,`debitos/${id}`));
+}
 
-// 11) Motorista/Empresa stubs
-async function adicionarMotorista(e) { /* implementar */ }
-async function adicionarEmpresa(e) { /* implementar */ }
-function atualizarCamposMotorista() { /* implementar */ }
+// =====================
+// 12) Motorista & empresa
+// =====================
+async function adicionarMotorista(e) {
+  e.preventDefault();
+  const tipo=v('tipoMotorista'), m={nome:v('nomeMotorista'),tipo};
+  if(tipo==='autonomo') m.cpf=v('cpfAutonomo');
+  if(tipo==='contratado') m.empresa=v('empresaContratada');
+  await set(push(ref(database,'motoristas')),m);
+  alert('Motorista registrado!'); document.getElementById('form-motorista').reset(); atualizarCamposMotorista();
+}
 
-// 12) Details, attachments, utilities
-function mostrarDetalhes(id) { /* implementar */ }
-function mostrarAnexo(nome, base64) { return base64 ? `<a href="${base64}" target="_blank">📎 ${nome}</a><br>` : ''; }
-function toBase64(file) { return new Promise(resolve => { if (!file) return resolve(null); const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
+async function adicionarEmpresa(e) {
+  e.preventDefault();
+  const emp={nome:v('nomeEmpresa'),cnpj:v('cnpjEmpresa'),contato:v('contatoEmpresa')};
+  await set(push(ref(database,'empresas')),emp);
+  alert('Empresa registrada!'); document.getElementById('form-empresa').reset();
+}
 
-// 13) Initialization
-document.addEventListener('DOMContentLoaded', () => {
-  ({ ref, push, set, onValue, update, remove } = window.firebaseRefs);
-  database = window.database;
-  carregarRegistrosFirebase();
-});
+function atualizarCamposMotorista() {
+  ['autonomo','contratado','mmb'].forEach(t=>document.getElementById(`field-${t}`).classList.add('hidden'));
+  const s=v('tipoMotorista'); if(s) document.getElementById(`field-${s}`).classList.remove('hidden');
+}
 
-// 14) Expose
-window.showForm = showForm;
-window.renderizarLista = renderizarLista;
-window.adicionarCarga = adicionarCarga;
-window.adicionarDebito = adicionarDebito;
-window.adicionarMotorista = adicionarMotorista;
-window.adicionarEmpresa = adicionarEmpresa;
-window.atualizarCamposMotorista = atualizarCamposMotorista;
-window.mostrarDetalhes = mostrarDetalhes;
-window.editarCarga = editarCarga;
-window.deletarCarga = deletarCarga;
-window.deletarDebito = deletarDebito;
+// =====================
+// 13) Detalhes e anexos
+// =====================
+function mostrarDetalhes(id) {
+  document.getElementById(`detail-${id}`).classList.toggle('hidden');
+}
+
+function mostrarAnexo(nome, base64) {
+  return base64?`<a href="${base64}" target="_blank">📎 ${nome}</a><br>`:'';
+}
+
+function toBase64(file) {
+  return new Promise(res=>{ if(!file) return res(null); const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+}
