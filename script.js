@@ -102,10 +102,99 @@ function showForm(tipo) {
 async function adicionarCarga(e) {
   e.preventDefault();
   const id = document.getElementById("editIndex").value;
-  // ... lógica existente ...
+  const carga = {
+    empresa: document.getElementById("empresa").value,
+    valorMercadoria: document.getElementById("valorMercadoria").value,
+    tipoMercadoria: document.getElementById("tipoMercadoria").value,
+    origem: document.getElementById("origem").value,
+    destino: document.getElementById("destino").value,
+    km: document.getElementById("km").value,
+    peso: document.getElementById("peso").value,
+    manifestante: document.getElementById("manifestante").value,
+    frete: document.getElementById("frete").value,
+    custos: document.getElementById("custos").value,
+    recebido: document.getElementById("recebido").value,
+    areceber: document.getElementById("areceber").value,
+    data: document.getElementById("data").value,
+    relatorio: document.getElementById("relatorio").value,
+    funcionarioMMB: document.getElementById("funcionarioMMB").checked,
+    status: "Em andamento",
+    pix: await toBase64(document.getElementById("pix").files[0]),
+    mdfe: await toBase64(document.getElementById("mdfe").files[0]),
+    cte: await toBase64(document.getElementById("cte").files[0]),
+    nf: await toBase64(document.getElementById("nf").files[0]),
+    canhoto: await toBase64(document.getElementById("canhoto").files[0]),
+    contrato: await toBase64(document.getElementById("contrato").files[0])
+  };
+
+  if (!id) {
+    const newRef = push(ref(database, 'cargas'));
+    await set(newRef, carga);
+    alert("Carga registrada!");
+  } else {
+    await update(ref(database, `cargas/${id}`), carga);
+    alert("Carga atualizada!");
+    document.getElementById("editIndex").value = "";
+  }
+
+  document.getElementById('formCarga').reset();
+  renderizarLista();
 }
 
 // 4) Editar e deletar carga
+function editarCarga(id) {
+  const c = cargas.find(item => item.id === id);
+  if (!c) return;
+  document.getElementById("empresa").value = c.empresa;
+  document.getElementById("valorMercadoria").value = c.valorMercadoria;
+  document.getElementById("tipoMercadoria").value = c.tipoMercadoria;
+  document.getElementById("origem").value = c.origem;
+  document.getElementById("destino").value = c.destino;
+  document.getElementById("km").value = c.km;
+  document.getElementById("peso").value = c.peso;
+  document.getElementById("manifestante").value = c.manifestante;
+  document.getElementById("frete").value = c.frete;
+  document.getElementById("custos").value = c.custos;
+  document.getElementById("recebido").value = c.recebido;
+  document.getElementById("areceber").value = c.areceber;
+  document.getElementById("data").value = c.data;
+  document.getElementById("relatorio").value = c.relatorio;
+  document.getElementById("funcionarioMMB").checked = c.funcionarioMMB;
+  document.getElementById("editIndex").value = id;
+  document.getElementById("form-titulo").innerText = `Editando carga: ${c.empresa}`;
+  showSection('form-carga');
+}
+function deletarCarga(id) {
+  const motivo = prompt("Motivo da exclusão:");
+  const senha = prompt("Senha para exclusão:");
+  if (senha !== "4619") return alert("Senha incorreta.");
+  if (!motivo) return alert("Motivo é obrigatório.");
+  remove(ref(database, `cargas/${id}`));
+  renderizarLista();
+}
+
+// 5) Adicionar e deletar débito
+async function adicionarDebito(e) {
+  e.preventDefault();
+  const debito = {
+    descricao: document.getElementById("descDebito").value,
+    valor: document.getElementById("valorDebito").value,
+    data: document.getElementById("dataDebito").value
+  };
+  const newRef = push(ref(database, 'debitos'));
+  await set(newRef, debito);
+  alert("Débito registrado!");
+  e.target.reset();
+  renderizarLista();
+}
+function deletarDebito(id) {
+  const motivo = prompt("Motivo da exclusão:");
+  const senha = prompt("Senha para exclusão:");
+  if (senha !== "4619") return alert("Senha incorreta.");
+  if (!motivo) return alert("Motivo é obrigatório.");
+  remove(ref(database, `debitos/${id}`));
+  renderizarLista();
+}
 function editarCarga(id) {
   // ... lógica existente ...
 }
