@@ -8,7 +8,7 @@ let debitos = [];
 let motoristas = [];
 let empresas = [];
 
-// 2) Função utilitária para processar snapshots
+// 2) Utilitário para processar snapshots
 function processSnapshot(snapshot) {
   const data = snapshot.val() || {};
   return Object.entries(data).map(([id, val]) => ({ id, ...val }));
@@ -32,11 +32,10 @@ function carregarRegistrosFirebase() {
   });
 }
 
-// 4) Mostrar/ocultar seções
+// 4) Show/hide sections
 function showSection(id) {
-  ['form-carga','form-debito','form-motorista','form-empresa','lista'].forEach(sec => {
-    document.getElementById(sec).classList.add('hidden');
-  });
+  ['form-carga','form-debito','form-motorista','form-empresa','lista']
+    .forEach(sec => document.getElementById(sec).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   const titulo = document.getElementById('form-titulo');
   if (titulo) {
@@ -51,16 +50,16 @@ function showSection(id) {
   }
 }
 
-// 5) showForm genérico
+// 5) Generic showForm
 function showForm(tipo) {
-  let sec = 'form-carga';
-  if (tipo === 'debito') sec = 'form-debito';
-  else if (tipo === 'motorista') sec = 'form-motorista';
-  else if (tipo === 'empresa') sec = 'form-empresa';
-  showSection(sec);
+  let section = 'form-carga';
+  if (tipo === 'debito') section = 'form-debito';
+  else if (tipo === 'motorista') section = 'form-motorista';
+  else if (tipo === 'empresa') section = 'form-empresa';
+  showSection(section);
 }
 
-// 6) Renderizar lista de cargas e débitos
+// 6) Render list
 function renderizarLista() {
   showSection('lista');
   const registrosDiv = document.getElementById('registros');
@@ -103,7 +102,7 @@ function renderizarLista() {
   });
 }
 
-// 7) Coletar dados do formulário de carga
+// 7) Collect cargo form data
 async function collectFormCarga() {
   return {
     empresa: document.getElementById('empresa').value,
@@ -131,7 +130,7 @@ async function collectFormCarga() {
   };
 }
 
-// 8) Adicionar/atualizar carga
+// 8) Add/update cargo
 async function adicionarCarga(e) {
   e.preventDefault();
   const id = document.getElementById('editIndex').value;
@@ -149,32 +148,32 @@ async function adicionarCarga(e) {
   showSection('lista');
 }
 
-// 9) Editar e deletar carga
-function editarCarga(id) { /* lógica existente */ }
-function deletarCarga(id) { /* lógica existente */ }
+// 9) Edit/delete cargo stubs
+function editarCarga(id) { /* implementar */ }
+function deletarCarga(id) { /* implementar */ }
 
-// 10) Adicionar/deletar débito
-async function adicionarDebito(e) { /* lógica existente */ }
-function deletarDebito(id) { /* lógica existente */ }
+// 10) Add/delete debit stubs
+async function adicionarDebito(e) { /* implementar */ }
+function deletarDebito(id) { /* implementar */ }
 
-// 11) Motorista/Empresa
-async function adicionarMotorista(e) { /* lógica existente */ }
-async function adicionarEmpresa(e) { /* lógica existente */ }
-function atualizarCamposMotorista() { /* lógica existente */ }
+// 11) Motorista/Empresa stubs
+async function adicionarMotorista(e) { /* implementar */ }
+async function adicionarEmpresa(e) { /* implementar */ }
+function atualizarCamposMotorista() { /* implementar */ }
 
-// 12) Detalhes, anexos e utilitários
-function mostrarDetalhes(id) { /* lógica existente */ }
-function mostrarAnexo(nome, base64) { if (!base64) return ''; return `<a href="${base64}" target="_blank">📎 ${nome}</a><br>`; }
+// 12) Details, attachments, utilities
+function mostrarDetalhes(id) { /* implementar */ }
+function mostrarAnexo(nome, base64) { return base64 ? `<a href="${base64}" target="_blank">📎 ${nome}</a><br>` : ''; }
 function toBase64(file) { return new Promise(resolve => { if (!file) return resolve(null); const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
 
-// 13) Inicialização após load
+// 13) Initialization
 document.addEventListener('DOMContentLoaded', () => {
   ({ ref, push, set, onValue, update, remove } = window.firebaseRefs);
   database = window.database;
   carregarRegistrosFirebase();
 });
 
-// 14) Expor globalmente
+// 14) Expose
 window.showForm = showForm;
 window.renderizarLista = renderizarLista;
 window.adicionarCarga = adicionarCarga;
