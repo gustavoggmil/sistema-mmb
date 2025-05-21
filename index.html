@@ -57,7 +57,7 @@
       <!-- Formulário Débito -->
       <section id="form-debito" class="form-section hidden">
         <h1>Novo Débito</h1>
-        <form onsubmit="adicionarDebito(event)">
+        <form id="formDebito" onsubmit="adicionarDebito(event)">
           <input required placeholder="Descrição" id="descDebito" />
           <input required placeholder="Valor" id="valorDebito" type="number" />
           <input type="date" id="dataDebito" required />
