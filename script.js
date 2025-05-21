@@ -108,7 +108,7 @@ function renderizarLista() {
 async function adicionarCarga(e) {
   e.preventDefault();
   const id = document.getElementById('editIndex').value;
-  const carga = collectFormCarga();
+  const carga = await collectFormCarga();
   if (!id) {
     const newRef = push(ref(database, 'cargas'));
     await set(newRef, carga);
@@ -118,6 +118,11 @@ async function adicionarCarga(e) {
     alert('Carga atualizada!');
     document.getElementById('editIndex').value = '';
   }
+  document.getElementById('formCarga').reset();
+  // Exibe lista; o onValue listener irá repopular automaticamente
+  showSection('lista');
+}
+
   document.getElementById('formCarga').reset();
   renderizarLista();
 }
